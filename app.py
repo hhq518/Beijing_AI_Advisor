@@ -49,6 +49,25 @@ if __name__ == "__main__":
     print("🏠 北京房产AI智能分析助手已启动！")
     print("请输入你想分析的北京房产相关问题（如“2025年北京房价走势”）：")
     user_topic = input("👇 ")
-    result = get_ai_analysis(user_topic)
+
+    # --- 新增：模式选择菜单（不改动你原有的欢迎词和提问逻辑）---
+    print("\n请选择回答模式：")
+    print("1 - 默认分析师模式")
+    print("2 - Few-shot示例模式")
+    print("3 - 思维链模式")
+    print("4 - JSON结构化模式")
+    mode_choice = input("请输入模式编号(1/2/3/4)：")
+
+    # 把用户输入的编号映射为prompt_mode参数
+    mode_map = {
+        "1": "default",
+        "2": "fewshot",
+        "3": "cot",
+        "4": "json"
+    }
+    selected_mode = mode_map.get(mode_choice, "default")  # 输入无效时默认用default
+    # --- 新增部分结束 ---
+
+    result = get_ai_analysis(user_topic, prompt_mode=selected_mode)
     print("\n📊 AI分析结果：")
     print(result)
