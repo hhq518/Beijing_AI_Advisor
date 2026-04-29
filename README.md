@@ -57,15 +57,19 @@ Beijing_AI_Advisor/
 
 #### 克隆仓库 
 ``git clone https://github.com/你的用户名/Beijing_AI_Advisor.git``
+
 ``cd Beijing_AI_Advisor ``
 
 #### 安装依赖 
+
 ```pip install -r requirements.txt```
 
 ### 2 . 配置API Key
 在项目根目录创建 `.env` 文件，写入你的阿里云 API 密钥：
-```API_KEY=你的阿里云百炼API密钥 ```
-```BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1```
+
+``API_KEY=你的阿里云百炼API密钥 ``
+
+``BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1``
 
 ### 3. 运行项目
 #### 版本1：基础对话版
@@ -75,11 +79,15 @@ Beijing_AI_Advisor/
 1. 在knowledge.txt中添加你想让Al参考的知识点(如房价数据，政策解读，真实房源信息等)
 2. 运行 RAG主程序：
 Windows PowerShell先设置国内镜像(避免模型下载失败)
+
 ```Senv:HF_ENDPOINT	"https://hf-mirror.com"	```
 ##### 运行终端版RAG助手
+
 ```python app_rag.py```
+
 #### 版本3:Streamlit 网页版(推荐)
 一键启动带界面的AI助手，体验更接近 ChatGPT:
+
 ``python -m streamlit run app_web.py``
 
 ---
