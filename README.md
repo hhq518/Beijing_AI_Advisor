@@ -9,6 +9,8 @@
 - 轻量化设计，一键运行，无需复杂环境配置 
 - 模块化架构，API调用与提示词模板分离，易扩展维护
 - 内置`.env`密钥管理，保障API Key安全
+- 支持Function Calling，AI可调用外部工具，实现天气查询等扩展能力
+- 支持多轮对话，具备上下文记忆能力，对话体验更自然
  --- 
 ## 🚀 核心功能
  1. **多维度房产咨询** 
@@ -20,7 +22,13 @@
  3. **多模式交互支持**
  - 命令行模式：直接对话，快速获取分析结果 
  - Web可视化界面：Streamlit搭建，支持对话历史与多模式切换
- 4. **安全与可维护性**
+ 4. **Function Calling 工具调用**
+ - 支持AI调用外部工具，如天气查询等实用功能
+ - 可扩展更多工具，实现房贷计算、政策查询等场景
+ 5. **多轮对话上下文记忆**
+ - 完整保留对话历史，支持指代、上下文关联提问
+ - 实现连贯对话体验，如“你刚才提到的小区哪个最贵？”  
+ 6. **安全与可维护性**
  - `.env`文件管理敏感信息，避免密钥泄露
  - 模块化代码结构，API、Prompt、RAG模块分离，便于扩展
  --- 
@@ -32,35 +40,39 @@
  | 向量数据库 | ChromaDB | 本地知识库存储与语义检索 |
  | Web界面 | Streamlit | 可视化交互界面搭建 | 
  | 依赖管理 | requirements.txt | 项目依赖统一管理 |
-  | 环境配置 | python-dotenv | `.env`文件加载与密钥管理 | 
+ | 环境配置 | python-dotenv | `.env`文件加载与密钥管理 | 
+ | 工具调用 | OpenAI Function Calling | 支持AI调用外部工具 |
   --- 
   ## 📁 项目结构
 ```
 
 Beijing_AI_Advisor/
 ├── 📄 核心代码文件
-│   ├── app.py                  # 主入口：阿里云百炼大模型OpenAI兼容客户端初始化，多模式对话交互逻辑
-│   ├── app_rag.py              # RAG核心模块：知识库加载、向量存储（ChromaDB）、语义检索与上下文增强
-│   ├── app_web.py              # Streamlit Web端：可视化交互界面，支持多模式切换与对话历史展示
-│   ├── prompts.py              # Prompt模板管理：默认/JSON/思维链等多模式提示词，支持动态切换
-│   ├── rag_demo.py             # RAG功能演示脚本：本地知识库测试、向量检索效果验证
+│   ├── app.py                   # 主入口：阿里云百炼大模型OpenAI兼容客户端初始化，多模式对话交互逻辑
+│   ├── app_rag.py               # RAG核心模块：知识库加载、向量存储（ChromaDB）、语义检索与上下文增强
+│   ├── app_fc.py                # RAG + Function Calling 整合主程序
+│   ├── app_web.py               # Streamlit Web端：可视化交互界面，支持多模式切换与对话历史展示
+│   ├── app_ui_multi_turn.py     # Streamlit 多轮对话界面（带上下文记忆）
+│   ├── function_calling_demo.py # Function Calling 功能演示
+│   ├── prompts.py               # Prompt模板管理：默认/JSON/思维链等多模式提示词，支持动态切换
+│   ├── rag_demo.py              # RAG功能演示脚本：本地知识库测试、向量检索效果验证
 │
 ├── 📚 项目资源文件
-│   ├── knowledge.txt           # 房产知识库文本：用于RAG检索的北京房产政策、市场信息
-│   ├── demo.png                # 项目主截图/封面图
-│   ├── demo_rag.png            # RAG功能演示截图
-│   ├── demo_terminal.png       # 命令行交互演示截图
-│   ├── demo_web.png            # Web界面演示截图
+│   ├── knowledge.txt            # 房产知识库文本：用于RAG检索的北京房产政策、市场信息
+│   ├── demo.png                 # 项目主截图/封面图
+│   ├── demo_rag.png             # RAG功能演示截图
+│   ├── demo_terminal.png        # 命令行交互演示截图
+│   ├── demo_web.png             # Web界面演示截图
 │
 ├── ⚙️ 配置与依赖文件
-│   ├── .env                    # 环境变量配置（本地私有，不提交到Git）：存储API_KEY、BASE_URL等敏感信息
-│   ├── .gitignore              # Git忽略配置：排除.env、__pycache__、chroma_db缓存等
-│   ├── requirements.txt        # 项目依赖清单：openai、chromadb、streamlit、python-dotenv等
-│   ├── README.md               # 项目说明文档（当前需补充内容）
+│   ├── .env                     # 环境变量配置（本地私有，不提交到Git）：存储API_KEY、BASE_URL等敏感信息
+│   ├── .gitignore               # Git忽略配置：排除.env、__pycache__、chroma_db缓存等
+│   ├── requirements.txt         # 项目依赖清单：openai、chromadb、streamlit、python-dotenv等
+│   ├── README.md                # 项目说明文档（当前需补充内容）
 │
 └── 📂 生成/缓存文件（可自动生成）
-    ├── chroma_db/              # ChromaDB向量数据库：存储知识库的向量嵌入，用于语义检索
-    └── __pycache__/            # Python自动生成的字节码缓存文件，可忽略
+    ├── chroma_db/               # ChromaDB向量数据库：存储知识库的向量嵌入，用于语义检索
+    └── __pycache__/             # Python自动生成的字节码缓存文件，可忽略
 
 ```
 ---
