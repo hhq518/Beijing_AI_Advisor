@@ -54,6 +54,24 @@ def count_word_frequency(text: str) -> str:
         freq[word] = freq.get(word, 0) + 1
     top3 = sorted(freq.items(), key=lambda x: x[1], reverse=True)[:3]
     return json.dumps({"top3_words": top3})
+# 新增工具1：计算器（乘法）
+def multiply(a: int, b: int) -> str:
+    """计算两个整数的乘积
+    Args:
+        a: 第一个整数
+        b: 第二个整数
+    """
+    result = a * b
+    return json.dumps({"a": a, "b": b, "result": result})
+
+# 新增工具2：文本词数统计
+def count_words(text: str) -> str:
+    """统计一段文本的字符数量
+    Args:
+        text: 要统计的文本字符串
+    """
+    count = len(text.strip())
+    return json.dumps({"text": text, "word_count": count})
 
 # ========== 5. 关键步骤：把所有工具包装成Agent能识别的格式 ==========
 # 原理：OpenAI的Function Calling需要固定格式，告诉模型每个工具的作用、参数
@@ -88,16 +106,47 @@ tools = [
             }
         }
     },
-    # 工具3：词频统计
+    # 原有工具：天气查询
     {
         "type": "function",
         "function": {
-            "name": "count_word_frequency",
-            "description": "用户问文本统计、词频相关问题时，调用这个工具",
+            "name": "get_weather",
+            "description": "用户问天气相关问题时，调用这个工具查询实时天气",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "text": {"type": "string", "description": "要统计词频的文本"}
+                    "city": {"type": "string", "description": "要查询天气的城市名"}
+                },
+                "required": ["city"]
+            }
+        }
+    },
+    # 新增工具：计算器
+    {
+        "type": "function",
+        "function": {
+            "name": "multiply",
+            "description": "用户问乘法计算问题时，调用这个工具计算两个数的乘积",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "a": {"type": "integer", "description": "第一个整数"},
+                    "b": {"type": "integer", "description": "第二个整数"}
+                },
+                "required": ["a", "b"]
+            }
+        }
+    },
+    # 新增工具：词数统计
+    {
+        "type": "function",
+        "function": {
+            "name": "count_words",
+            "description": "用户问文本词数/字符数统计问题时，调用这个工具",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text": {"type": "string", "description": "要统计的文本字符串"}
                 },
                 "required": ["text"]
             }
@@ -105,11 +154,13 @@ tools = [
     }
 ]
 
+
 # 工具映射表：模型决定调用哪个工具，我们就执行对应的函数
 tool_map = {
     "rag_search": rag_search,
     "get_weather": get_weather,
-    "count_word_frequency": count_word_frequency
+    "multiply": multiply,
+    "count_words": count_words
 }
 
 # ========== 6. 核心：实现ReAct Agent循环，自动路由用户意图 ==========
@@ -155,16 +206,13 @@ def run_agent(query: str):
 
 # ========== 7. 运行测试：验证意图路由是否生效 ==========
 if __name__ == "__main__":
-    print("=== 开始测试全功能Agent ===")
-    
-    # 测试1：房产问题 → 自动走RAG检索
-    run_agent("北京现在房价怎么样？")
-    
-    # 测试2：天气问题 → 自动调用天气工具
-    run_agent("北京今天的天气怎么样？")
-    
-    # 测试3：无关问题 → 直接回答
-    run_agent("今天吃什么？")
-    
-    # 测试4：复杂问题（多轮调用）
-    run_agent("北京今天的天气怎么样？根据天气推荐一个适合看房的日子")
+    print("=== 多工具Agent已启动，输入问题开始对话，输入 quit 退出 ===")
+    print("----------------------------------------")
+    while True:
+        user_input = input("请输入问题：")
+        if user_input.strip().lower() == "quit":
+            print("Agent：再见👋")
+            break
+        print("----------------------------------------")
+        run_agent(user_input)  # 改成和你定义的函数名一致
+        print("----------------------------------------")
