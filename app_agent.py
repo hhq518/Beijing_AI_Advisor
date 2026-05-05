@@ -3,7 +3,14 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 import json
-
+import redis    
+# ========== Redis 长期记忆配置 ==========
+r = redis.Redis(
+    host="localhost",
+    port=6379,
+    db=0,
+    decode_responses=True  # 自动转字符串，不用你处理编码
+)
 # ========== 2. 加载环境变量：和你之前的项目逻辑完全一致 ==========
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -162,40 +169,61 @@ tool_map = {
     "multiply": multiply,
     "count_words": count_words
 }
+# ========== Redis 长期记忆函数 ==========
+def load_redis_memory():
+    """从 Redis 加载历史对话"""
+    history = r.get("chat_history")
+    return json.loads(history) if history else []
 
+def save_redis_memory(history):
+    """把对话保存到 Redis"""
+    r.set("chat_history", json.dumps(history, ensure_ascii=False))
 # ========== 6. 核心：实现ReAct Agent循环，自动路由用户意图 ==========
 # 原理：这就是你面试话术里说的「思考-行动-观察-再思考」循环
 def run_agent(query: str):
     print(f"\n=== 用户问题：{query} ===")
-    messages = [{"role": "user", "content": query}]
-    
+
+    # ======================
+    # 【新增 1】加载 Redis 记忆
+    # ======================
+    messages = load_redis_memory()
+
+    # 把新问题加入历史
+    messages.append({"role": "user", "content": query})
+
+    final_answer = ""
+
     while True:
-        # 1. 思考：模型收到问题，判断要不要调用工具、调用哪个工具
-        print("\n[Thought] 模型正在分析用户意图...")
+        print("\n[Thought] Agent正在分析用户意图...")
         response = client.chat.completions.create(
             model="qwen-turbo",
             messages=messages,
             tools=tools,
-            tool_choice="auto"  # 自动判断是否调用工具
+            tool_choice="auto"
         )
         response_message = response.choices[0].message
-        
-        # 2. 如果不需要调用工具，直接输出答案（比如无关问题）
+
         if not response_message.tool_calls:
-            print(f"[Final Answer] {response_message.content}")
-            return response_message.content
-        
-        # 3. 行动：调用模型选择的工具
+            final_answer = response_message.content
+            print(f"[Final Answer] {final_answer}")
+
+            # ======================
+            # 【新增 2】把最终对话存入 Redis
+            # ======================
+            messages.append({"role": "assistant", "content": final_answer})
+            save_redis_memory(messages)  # 保存记忆
+
+            return final_answer
+
+        # 下面是你原来的工具调用逻辑，完全不动！
         for tool_call in response_message.tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
             print(f"[Action] 调用工具：{tool_name}，参数：{tool_args}")
-            
-            # 4. 观察：执行工具，获取结果
+
             tool_result = tool_map[tool_name](**tool_args)
             print(f"[Observation] 工具返回：{tool_result}")
-            
-            # 把工具结果喂给模型，让它继续思考/生成最终答案
+
             messages.append(response_message)
             messages.append({
                 "role": "tool",
