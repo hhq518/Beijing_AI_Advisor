@@ -80,6 +80,25 @@ def count_words(text: str) -> str:
     count = len(text.strip())
     return json.dumps({"text": text, "word_count": count})
 
+def analyze_property_image(image_url: str) -> str:
+    """
+    房产图片分析工具：调用多模态模型解析户型图，给出专业分析
+    """
+    # 核心：用通义千问的多模态模型处理图片+文本
+    response = client.chat.completions.create(
+        model="qwen-vl-max",  # 必须用支持多模态的模型
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "帮我分析这张房产户型图，描述户型结构、朝向、优缺点，再给出估价建议"},
+                    {"type": "image_url", "image_url": {"url": image_url}}
+                ]
+            }
+        ]
+    )
+    return response.choices[0].message.content
+
 # ========== 5. 关键步骤：把所有工具包装成Agent能识别的格式 ==========
 # 原理：OpenAI的Function Calling需要固定格式，告诉模型每个工具的作用、参数
 tools = [
@@ -158,6 +177,24 @@ tools = [
                 "required": ["text"]
             }
         }
+    },
+    # 新增工具： 多模态图片
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_property_image",
+            "description": "用户提供房产图片URL，需要分析户型、估价、优缺点时调用此工具",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "image_url": {
+                        "type": "string",
+                        "description": "房产图片的URL地址"
+                    }
+                },
+                "required": ["image_url"]
+            }
+        }
     }
 ]
 
@@ -167,7 +204,8 @@ tool_map = {
     "rag_search": rag_search,
     "get_weather": get_weather,
     "multiply": multiply,
-    "count_words": count_words
+    "count_words": count_words,
+    "analyze_property_image": analyze_property_image
 }
 # ========== Redis 长期记忆函数 ==========
 def load_redis_memory():
@@ -176,25 +214,35 @@ def load_redis_memory():
     return json.loads(history) if history else []
 
 def save_redis_memory(history):
-    """把对话保存到 Redis"""
-    r.set("chat_history", json.dumps(history, ensure_ascii=False))
+    filtered_history = []
+    for msg in history:
+        # 关键：把所有对象都转成字典，不管是普通dict还是OpenAI对象
+        if hasattr(msg, "model_dump"):
+            msg_dict = msg.model_dump()
+        elif hasattr(msg, "to_dict"):
+            msg_dict = msg.to_dict()
+        else:
+            msg_dict = dict(msg)
+        
+        # 只保留用户和助手的对话消息
+        if msg_dict.get("role") in ["user", "assistant"]:
+            filtered_history.append(msg_dict)
+    
+    # 保存到Redis
+    r.set("chat_history", json.dumps(filtered_history, ensure_ascii=False))
+
 # ========== 6. 核心：实现ReAct Agent循环，自动路由用户意图 ==========
 # 原理：这就是你面试话术里说的「思考-行动-观察-再思考」循环
 def run_agent(query: str):
     print(f"\n=== 用户问题：{query} ===")
 
-    # ======================
-    # 【新增 1】加载 Redis 记忆
-    # ======================
+    # 加载Redis里的历史对话（纯字典，不会报错）
     messages = load_redis_memory()
-
-    # 把新问题加入历史
     messages.append({"role": "user", "content": query})
 
     final_answer = ""
 
     while True:
-        print("\n[Thought] Agent正在分析用户意图...")
         response = client.chat.completions.create(
             model="qwen-turbo",
             messages=messages,
@@ -207,15 +255,13 @@ def run_agent(query: str):
             final_answer = response_message.content
             print(f"[Final Answer] {final_answer}")
 
-            # ======================
-            # 【新增 2】把最终对话存入 Redis
-            # ======================
-            messages.append({"role": "assistant", "content": final_answer})
-            save_redis_memory(messages)  # 保存记忆
+            # 关键：把对象转成字典再append
+            messages.append(response_message.model_dump())
+            # 调用修复后的保存函数
+            save_redis_memory(messages)
 
             return final_answer
 
-        # 下面是你原来的工具调用逻辑，完全不动！
         for tool_call in response_message.tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
@@ -224,7 +270,8 @@ def run_agent(query: str):
             tool_result = tool_map[tool_name](**tool_args)
             print(f"[Observation] 工具返回：{tool_result}")
 
-            messages.append(response_message)
+            # 关键：把对象转成字典再append
+            messages.append(response_message.model_dump())
             messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call.id,
