@@ -6,7 +6,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from openai import OpenAI
+from openai import OpenAI #这些全是LangChain专门做RAG发工具
 
 # --------------------------
 # 2. 初始化配置（从.env文件读取，避免硬编码）
@@ -18,7 +18,7 @@ API_KEY = os.getenv("ALIYUN_API_KEY")  # 读取阿里云API密钥
 client = OpenAI(
     api_key=API_KEY,
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
+) # 创建一个能跟AI对话的客户端，就像你打开了一个聊天窗口，以后对话都通过它发
 
 # --------------------------
 # 3. 加载并处理知识库（RAG核心逻辑）
@@ -42,9 +42,9 @@ def init_knowledge_base():
         separators=["\n\n", "\n", "。", "，", " ", ""]
     )
     texts = text_splitter.split_documents(documents)
-    print(f"✅ 文本分块完成，共{len(texts)}个文本块")
+    print(f"✅ 文本分块完成，共{len(texts)}个文本块") # AI一次看不完特长的文章会爆炸，切成一段一段才能检索
 
-    # 3.3 初始化嵌入模型（从国内镜像下载，稳定不报错）
+    # 3.3 初始化嵌入模型（从国内镜像下载，稳定不报错）把文字变成一串数字（向量）方便计算机算相似度
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={"trust_remote_code": True},
@@ -70,9 +70,9 @@ def rag_answer(question, db):
     :param db: 向量数据库对象
     :return: 模型生成的回答
     """
-    # 4.1 检索和问题最相关的知识库内容
+    # 4.1 检索和问题最相关的知识库内容 把找到的知识拼进Prompt
     print("🔍 正在检索相关信息...")
-    docs = db.similarity_search(question, k=3)  # 取最相关的3个文本块
+    docs = db.similarity_search(question, k=3)  # 算相似度，取最相关的3个文本块
     context = "\n\n".join([doc.page_content for doc in docs])  # 拼接检索到的内容
 
     # 4.2 Prompt调优（核心！强制模型用知识库回答，不编造信息）
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print("="*50 + "\n")
 
     # 问答循环
-    while True:
+    while True: # 无限循环一直聊天不退出
         # 获取用户输入
         question = input("👉 请输入您的问题：")
 
