@@ -1,17 +1,18 @@
+# 顶部导入包
 from prompts import BEIJING_REAL_ESTATE_ANALYST, FEW_SHOT_EXAMPLES, CHAIN_OF_THOUGHT_PROMPT, JSON_OUTPUT_PROMPT
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+import os  # 读取电脑系统里的环境变量。
+from dotenv import load_dotenv # 读取 .env 文件里的密钥。你要把 API Key 直接写在代码里，上传 GitHub 会被盗号
+from openai import OpenAI # 引入官方的 AI 客户端，让你能调用通义千问，没有它你根本连不上 AI。
 
-# 加载.env文件中的API Key
-load_dotenv()
-API_KEY = os.getenv("ALIYUN_API_KEY")
+# 加载.env文件中的API Key 加载密钥
+load_dotenv() #把键值对塞进系统环境变量里
+API_KEY = os.getenv("ALIYUN_API_KEY") # os去系统变量里面拿API Key和访问地址
 
-# 初始化阿里云百炼的OpenAI兼容客户端
+# 初始化阿里云百炼的OpenAI兼容客户端 创建客户端
 client = OpenAI(
     api_key=API_KEY,
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
+) # 创建一个能跟AI对话的客户端，就像你打开了一个聊天窗口，以后对话都通过它发
 
 def select_prompt(mode="default"):
     """
