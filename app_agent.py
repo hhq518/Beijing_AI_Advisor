@@ -1,6 +1,7 @@
 # ========== 1. 导入依赖：和你之前的项目保持一致 ==========
 from openai import OpenAI
 from dotenv import load_dotenv
+from security_guard import validate_input
 import os
 import json
 import redis    
@@ -288,6 +289,12 @@ if __name__ == "__main__":
         if user_input.strip().lower() == "quit":
             print("Agent：再见👋")
             break
+        #安全校验
+        is_valid, msg = validate_input(user_input)
+        if not is_valid:
+            print(f"❌ 安全拦截：{msg}")
+            continue  # 直接跳过，不进入 Agent
+
         print("----------------------------------------")
         run_agent(user_input)  # 改成和你定义的函数名一致
         print("----------------------------------------")

@@ -74,6 +74,7 @@ Beijing_AI_Advisor/
     ├── chroma_db/               # ChromaDB向量数据库：存储知识库的向量嵌入，用于语义检索
     └── __pycache__/             # Python自动生成的字节码缓存文件，可忽略
 
+
 ```
 ---
 
@@ -116,6 +117,7 @@ Windows PowerShell先设置国内镜像(避免模型下载失败)
 ``python -m streamlit run app_web.py``
 
 ---
+
 ## 📸 基础问答版本
 ![项目运行效果](demo.png)
 ## 📸 RAG问答版本

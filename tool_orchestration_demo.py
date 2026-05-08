@@ -146,13 +146,12 @@ def run_orchestration_agent(query: str):
 
 # ========== 6. 测试运行：验证自动选工具的效果 ==========
 if __name__ == "__main__":
-    print("=== 开始测试多工具编排Agent ===")
-    
-    # 测试1：天气问题 → 自动选get_weather
-    run_orchestration_agent("今天北京天气怎么样？")
-    
-    # 测试2：乘法问题 → 自动选multiply
-    run_orchestration_agent("123乘以456等于多少？")
-    
-    # 测试3：词数统计 → 自动选count_words
-    run_orchestration_agent("这段文字有多少个词：人工智能正在改变世界")
+    print("=== 多工具编排Agent已启动 ===")
+    print("输入你的问题，输入 'quit' 退出\n")
+
+    while True:
+        user_input = input("请输入问题：")
+        if user_input.strip().lower() == "quit":
+            print("退出程序")
+            break
+        run_orchestration_agent(user_input)
