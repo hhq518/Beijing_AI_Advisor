@@ -358,5 +358,59 @@
     "event_type": "正常输入",
     "user_input": "帮我再分析一下这张户型图的具体信息：https://img.zx123.cn/Resources/zx123cn/uploadfile/2015/0612/b04a6af8f0f37e40acf55572de081857.jpg",
     "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 00:54:24",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图，说说它的优缺点和适合的人群：https://ts1.tc.mm.bing.net/th/id/R-C.ebe3e2d1af64e4e69e126cc81d2e17bb?rik=4BUC7qJ8iQTgJA&riu=http%3a%2f%2fi5.szhomeimg.com%2fo%2f2021%2f03%2f16%2f03161700173405236.PNG&ehk=KhoVzSUZi4kU%2fq3Fdq4QqxCIzFcaR7Rs0Eo0PiRWXAE%3d&risl=&pid=ImgRaw&r=0",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 00:55:28",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图，说说它的优缺点和适合的人群：https://ts1.tc.mm.bing.net/th/id/R-C.ebe3e2d1af64e4e69e126cc81d2e17bb?rik=4BUC7qJ8iQTgJA&riu=http%3a%2f%2fi5.szhomeimg.com%2fo%2f2021%2f03%2f16%2f03161700173405236.PNG&ehk=KhoVzSUZi4kU%2fq3Fdq4QqxCIzFcaR7Rs0Eo0PiRWXAE%3d&risl=&pid=ImgRaw&r=0",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 00:59:31",
+    "event_type": "正常输入",
+    "user_input": "& C:/Users/95381/AppData/Local/Programs/Python/Python311/python.exe c:/Users/95381/Desktop/Beijing_AI_Advisor/app_agent_LangChain.py",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 00:59:43",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图，说说它的优缺点和适合的人群：https://ts1.tc.mm.bing.net/th/id/R-C.ebe3e2d1af64e4e69e126cc81d2e17bb?rik=4BUC7qJ8iQTgJA&riu=http%3a%2f%2fi5.szhomeimg.com%2fo%2f2021%2f03%2f16%2f03161700173405236.PNG&ehk=KhoVzSUZi4kU%2fq3Fdq4QqxCIzFcaR7Rs0Eo0PiRWXAE%3d&risl=&pid=ImgRaw&r=0",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 01:01:52",
+    "event_type": "正常输入",
+    "user_input": "& C:/Users/95381/AppData/Local/Programs/Python/Python311/python.exe c:/Users/95381/Desktop/Beijing_AI_Advisor/app_agent_LangChain.py",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 01:02:10",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图，说说它的优缺点和适合的人群：https://ts1.tc.mm.bing.net/th/id/R-C.ebe3e2d1af64e4e69e126cc81d2e17bb?rik=4BUC7qJ8iQTgJA&riu=http%3a%2f%2fi5.szhomeimg.com%2fo%2f2021%2f03%2f16%2f03161700173405236.PNG&ehk=KhoVzSUZi4kU%2fq3Fdq4QqxCIzFcaR7Rs0Eo0PiRWXAE%3d&risl=&pid=ImgRaw&r=0",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 01:07:56",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图，说说他的优缺点和适合的人群:https://ts1.tc.mm.bing.net/th/id/R-C.0a6f9895f2c3a8f65a36dbf2815c605b?rik=v3GwqEJImLh0dQ&riu=http%3a%2f%2fimg.zx123.cn%2fResources%2fzx123cn%2fuploadfile%2f2015%2f0514%2fee06dd428771e7afd3d155f27ad17022.jpg&ehk=f0wzB%2fT2Gsrbmt78CaOxj691dCiZxJ7xMkfkinGmKBI%3d&risl=&pid=ImgRaw&r=0",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 02:34:31",
+    "event_type": "正常输入",
+    "user_input": "帮我分析这张户型图并整理出优缺点适合什么人群：https://img.zx123.cn/Resources/zx123cn/uploadfile/2015/0612/b04a6af8f0f37e40acf55572de081857.jpg& C:/Users/95381/AppData/Local/Programs/Python/Python311/python.exe c:/Users/95381/Desktop/Beijing_AI_Advisor/app_agent_LangChain.py",
+    "is_blocked": false
+  },
+  {
+    "timestamp": "2026-05-11 02:38:05",
+    "event_type": "正常输入",
+    "user_input": "半个分析这张户型图并整理出优缺点以及适合什么人群：https://img.zx123.cn/Resources/zx123cn/uploadfile/2015/0612/b04a6af8f0f37e40acf55572de081857.jpg",
+    "is_blocked": false
   }
 ]
