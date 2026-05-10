@@ -1,4 +1,4 @@
-# ========== 1. 导入依赖：和你之前的项目保持一致 ==========
+# ========== 1. 导入依赖：和之前的项目保持一致 ==========
 from openai import OpenAI
 from dotenv import load_dotenv
 from security_guard import validate_input
@@ -13,15 +13,15 @@ r = redis.Redis(
     decode_responses=True  # 自动转字符串，不用你处理编码
 )
 # ========== 2. 加载环境变量：和你之前的项目逻辑完全一致 ==========
-load_dotenv()
-api_key = os.getenv("DASHSCOPE_API_KEY")
+load_dotenv()#把键值对塞进系统环境变量里
+api_key = os.getenv("DASHSCOPE_API_KEY")# os去系统变量里面拿API Key和访问地址
 base_url = os.getenv("DASHSCOPE_BASE_URL")
 
 # 初始化OpenAI客户端
 client = OpenAI(
     api_key=api_key,
     base_url=base_url
-)
+)# 创建一个能跟AI对话的客户端，就像你打开了一个聊天窗口，以后对话都通过它发
 
 # ========== 3. 复制你之前的RAG检索函数：给Agent加上房产问答能力 ==========
 def rag_search(query: str) -> str:
@@ -30,7 +30,7 @@ def rag_search(query: str) -> str:
     Args:
         query: 用户的房产相关问题，比如"北京房价走势"
     """
-    # 这里直接复制你之前项目里的rag_search函数，不用修改
+    # 直接复制之前项目里的rag_search函数，不用修改
     # （如果你的rag_search是在别的文件里，也可以用from app_rag import rag_search导入）
     # 示例：模拟知识库检索结果
     return json.dumps({
@@ -133,21 +133,6 @@ tools = [
             }
         }
     },
-    # 原有工具：天气查询
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "用户问天气相关问题时，调用这个工具查询实时天气",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "city": {"type": "string", "description": "要查询天气的城市名"}
-                },
-                "required": ["city"]
-            }
-        }
-    },
     # 新增工具：计算器
     {
         "type": "function",
@@ -235,50 +220,80 @@ def save_redis_memory(history):
 # ========== 6. 核心：实现ReAct Agent循环，自动路由用户意图 ==========
 # 原理：这就是你面试话术里说的「思考-行动-观察-再思考」循环
 def run_agent(query: str):
+    """
+    运行ReAct Agent循环，自动路由用户意图并调用对应工具
+    Args:
+        query: 用户输入的问题
+    Returns:
+        final_answer: Agent最终返回的答案
+    """
     print(f"\n=== 用户问题：{query} ===")
 
-    # 加载Redis里的历史对话（纯字典，不会报错）
+    # 加载Redis里的历史对话（纯字典，避免对象序列化问题）
     messages = load_redis_memory()
+    # 追加当前用户问题到对话历史
     messages.append({"role": "user", "content": query})
 
     final_answer = ""
-
+    # ReAct循环：思考→行动→观察→再思考
     while True:
-        response = client.chat.completions.create(
-            model="qwen-turbo",
-            messages=messages,
-            tools=tools,
-            tool_choice="auto"
-        )
+        # 调用大模型，让模型决定是否调用工具
+        try:
+            response = client.chat.completions.create(
+                model="qwen-turbo",
+                messages=messages,
+                tools=tools,
+                tool_choice="auto"  # 让模型自动决定是否调用工具
+            )
+        except Exception as e:
+            final_answer = f"Agent执行出错：{str(e)}"
+            print(f"[Error] {final_answer}")
+            messages.append({"role": "assistant", "content": final_answer})
+            save_redis_memory(messages)
+            return final_answer
+
         response_message = response.choices[0].message
 
+        # 情况1：模型不需要调用工具，直接返回最终答案
         if not response_message.tool_calls:
             final_answer = response_message.content
             print(f"[Final Answer] {final_answer}")
-
-            # 关键：把对象转成字典再append
+            # 将模型回答转为字典并追加到历史
             messages.append(response_message.model_dump())
-            # 调用修复后的保存函数
+            # 保存更新后的对话到Redis
             save_redis_memory(messages)
-
             return final_answer
 
+        # 情况2：模型需要调用工具，执行工具调用逻辑
         for tool_call in response_message.tool_calls:
             tool_name = tool_call.function.name
-            tool_args = json.loads(tool_call.function.arguments)
+            # 解析工具参数（容错：避免JSON解析失败）
+            try:
+                tool_args = json.loads(tool_call.function.arguments)
+            except json.JSONDecodeError:
+                tool_args = {}
+                print(f"[Warning] 工具参数解析失败：{tool_call.function.arguments}")
+
             print(f"[Action] 调用工具：{tool_name}，参数：{tool_args}")
 
-            tool_result = tool_map[tool_name](**tool_args)
+            # 执行工具函数（容错：避免工具不存在/参数错误）
+            try:
+                tool_result = tool_map[tool_name](**tool_args)
+            except Exception as e:
+                tool_result = json.dumps({"error": f"工具执行失败：{str(e)}"})
             print(f"[Observation] 工具返回：{tool_result}")
 
-            # 关键：把对象转成字典再append
+            # 将工具调用结果追加到对话历史，供模型后续思考
+            # 1. 追加模型的工具调用指令到历史
             messages.append(response_message.model_dump())
+            # 2. 追加工具返回结果到历史
             messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call.id,
                 "name": tool_name,
                 "content": tool_result
             })
+
 
 # ========== 7. 运行测试：验证意图路由是否生效 ==========
 if __name__ == "__main__":
