@@ -289,7 +289,7 @@ if __name__ == "__main__":
         if user_input.strip().lower() == "quit":
             print("Agent：再见👋")
             break
-        #安全校验
+        #安全校验 企业级 AI 应用标准安全架构
         is_valid, msg = validate_input(user_input)
         if not is_valid:
             print(f"❌ 安全拦截：{msg}")
