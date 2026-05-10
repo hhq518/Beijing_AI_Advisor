@@ -6,6 +6,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
+from openai import OpenAI  
 from security_guard import validate_input
 import os
 import json
@@ -23,12 +24,10 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# 初始化多模态模型专用客户端（和聊天客户端分开，避免冲突）
-client = ChatOpenAI(
+# ✅ 修复：多模态必须用原生 OpenAI 客户端，不能用 ChatOpenAI
+client = OpenAI(
     api_key=api_key,
-    base_url=base_url,
-    model_name="qwen-vl-max",
-    temperature=0.3
+    base_url=base_url
 )
 
 # ========== 3. 工具定义（全部用 @tool 装饰器，格式统一）==========
@@ -76,14 +75,14 @@ def analyze_property_image(image_url: str) -> str:
         image_url: 户型图的公开可访问URL
     """
     try:
-        # 调用多模态模型分析图片
+        # ✅ 修复：原生 OpenAI 调用格式
         response = client.chat.completions.create(
             model="qwen-vl-max",
             messages=[
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "请详细分析这张户型图：描述房间数量、分布、优缺点，并给出适合的购房人群和大致估价建议。"},
+                        {"type": "text", "text": "请详细分析这张户型图：结构、优缺点、适合人群、估价建议。"},
                         {"type": "image_url", "image_url": {"url": image_url}}
                     ]
                 }
@@ -93,10 +92,10 @@ def analyze_property_image(image_url: str) -> str:
     except Exception as e:
         return f"❌ 图片分析失败：{str(e)}"
 
-# ========== 4. 工具列表（直接用装饰器生成的工具）==========
+# ========== 4. 工具列表 ==========
 tools = [rag_search, get_weather, multiply, analyze_property_image]
 
-# ========== 5. 长期记忆配置 ==========
+# ========== 5. 记忆 ==========
 memory = ConversationBufferMemory(
     memory_key="chat_history",
     return_messages=True,
@@ -106,15 +105,15 @@ memory = ConversationBufferMemory(
     )
 )
 
-# ========== 6. 新版 Agent 专用 Prompt（必须包含 agent_scratchpad）==========
+# ========== 6. Prompt ==========
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "你是专业的北京房产AI助手，能根据用户问题调用工具回答，必须使用提供的工具，不要编造信息。"),
+    ("system", "你是专业的北京房产AI助手，必须调用工具回答，禁止编造信息。"),
     MessagesPlaceholder(variable_name="chat_history"),
     ("user", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])
 
-# ========== 7. 创建 Agent 和执行器 ==========
+# ========== 7. Agent ==========
 agent = create_openai_tools_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(
     agent=agent,
@@ -125,7 +124,7 @@ agent_executor = AgentExecutor(
     handle_parsing_errors=True
 )
 
-# ========== 8. 启动交互 ==========
+# ========== 8. 启动 ==========
 if __name__ == "__main__":
     print("=== 🔥 企业级新版 LangChain Agent 已启动 ===")
     while True:
