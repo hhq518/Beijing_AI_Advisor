@@ -4,10 +4,9 @@ os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from openai import OpenAI #这些全是LangChain专门做RAG发工具
-
 # --------------------------
 # 2. 初始化配置（从.env文件读取，避免硬编码）
 # --------------------------
@@ -53,8 +52,8 @@ def init_knowledge_base():
 
     # 3.4 存入向量数据库（持久化存储，下次不用重新加载）
     db = Chroma.from_documents(
-        texts,
-        embeddings,
+        documents=texts,
+        embedding=embeddings,
         persist_directory="./chroma_db"  # 数据库文件会存在这个文件夹里
     )
     print("✅ 知识库初始化完成！")
