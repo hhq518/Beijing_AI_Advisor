@@ -23,7 +23,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Docker 相关文件（可选）
+# Docker 相关文件 （可选）
 Dockerfile
 docker-compose.yml
 .dockerignore
