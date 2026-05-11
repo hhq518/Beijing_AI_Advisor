@@ -119,16 +119,16 @@ Windows PowerShell先设置国内镜像(避免模型下载失败)
 ---
 
 ## 📸 基础问答版本
-![项目运行效果](demo.png)
+![项目运行效果](images/demo.png)
 ## 📸 RAG问答版本
 知识库加载。向量检索与问答结果展示
-![项目运行效果](demo_rag.png)
+![项目运行效果](images/demo_rag.png)
 ## 📸 Streamlit服务启动日志
 服务启动过程与端口信息展示
-![项目运行效果](demo_terminal.png)
+![项目运行效果](images/demo_terminal.png)
 ## 📸 Streamlit网页交互界面
 AI 助手可视化对话界面
-![项目运行效果](demo_web.png)
+![项目运行效果](images/demo_web.png)
 
 ---
 ### 📧 关于作者
