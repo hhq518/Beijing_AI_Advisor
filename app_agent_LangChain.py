@@ -140,3 +140,12 @@ if __name__ == "__main__":
 
         res = agent_executor.invoke({"input": user_input})
         print(f"助手：{res['output']}\n")
+# 新增：封装Agent逻辑，供API服务调用
+# 新增：封装Agent逻辑，供API服务调用
+def main_agent(user_input: str, session_id: str = None) -> str:
+    """
+    封装你的Agent主逻辑，供api_server.py调用
+    """
+    # 这里要和你主程序里的调用方式保持一致
+    res = agent_executor.invoke({"input": user_input})
+    return res["output"]
