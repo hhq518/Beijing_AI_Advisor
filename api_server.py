@@ -5,6 +5,8 @@ from typing import Optional, List
 import uvicorn
 import os
 from app_agent_LangChain import main_agent  # 导入你自己的Agent主逻辑
+from database_manager import SessionStorage
+session_store = SessionStorage()
 
 # 2. 创建FastAPI应用实例
 app = FastAPI(
@@ -12,6 +14,7 @@ app = FastAPI(
     description="LangChain Agent的RESTful API接口，支持对话、图片分析和历史记录查询",
     version="1.0.0"
 )
+
 
 # 3. 定义请求数据格式（别人调用时，必须按这个格式传数据）
 class ChatRequest(BaseModel):
@@ -31,18 +34,18 @@ def health_check():
     return {"status": "ok", "service": "北京房产AI顾问"}
 
 # 对话接口：核心接口，调用你的Agent进行对话
-@app.post("/chat", response_model=ChatResponse, summary="发送对话消息")
-def chat(request: ChatRequest):
-    """
-    接收用户消息，调用Agent生成回复
-    """
-    # 调用你自己的Agent主逻辑，传入用户消息和会话ID
-    response = main_agent(user_input=request.message, session_id=request.session_id)
-    return {
-        "response": response,
-        "session_id": request.session_id or "default"
-    }
+@app.post("/chat")
+async def chat(user_input: str, session_id: str = "default"):
+    # 关键步骤1：先把用户输入存进数据库
+    session_store.add_message(session_id, "user", user_input)
 
+    # 关键步骤2：调用你的Agent获取回复（这里是你原来的逻辑）
+    response = main_agent(user_input)
+
+    # 关键步骤3：把AI回复也存进数据库
+    session_store.add_message(session_id, "assistant", response)
+
+    return {"response": response}
 # 图片分析接口（可选，如果你有图片分析功能）
 @app.post("/analyze-image", summary="分析图片内容")
 async def analyze_image(file: UploadFile = File(...)):
@@ -63,13 +66,13 @@ async def analyze_image(file: UploadFile = File(...)):
     return {"response": response}
 
 # 对话历史查询接口（可选，用来查看历史对话）
-@app.get("/history", summary="查看对话历史")
-def get_history(session_id: Optional[str] = None):
-    """
-    根据会话ID查询历史对话记录
-    """
-    # 这里可以连接你的数据库/缓存，返回历史记录，示例代码直接返回空列表
-    return {"history": [], "session_id": session_id}
+@app.get("/history")
+async def get_history(session_id: str = "default", limit: int = 5):
+    history = session_store.get_recent_messages(session_id, limit=limit)
+    return {
+        "session_id": session_id,
+        "history": [{"role": msg[0], "message": msg[1], "time": msg[2]} for msg in history]
+    }
 
 # 启动服务的入口
 if __name__ == "__main__":
