@@ -1,0 +1,20 @@
+# 1. 基础镜像：用和你本地一致的Python版本，保证环境兼容
+FROM python:3.11-slim
+
+# 2. 设置工作目录：容器内的代码存放位置
+WORKDIR /app
+
+# 3. 复制依赖清单：先复制requirements.txt，利用Docker缓存加速构建
+COPY requirements.txt .
+
+# 4. 安装依赖：加上清华源，解决国内网络问题
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 5. 复制所有项目代码到容器里
+COPY . .
+
+# 6. 暴露端口：告诉Docker这个容器要开放8000端口（和FastAPI的端口一致）
+EXPOSE 8000
+
+# 7. 启动命令：直接运行你的API服务
+CMD ["python", "api_server.py"]
