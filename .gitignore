@@ -1,1 +1,44 @@
+# 环境变量文件，保护API密钥（你原来的配置也在里面）
 .env
+.env.*
+!.env.example
+
+# Python 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# 向量数据库与数据缓存
+chroma_db/
+*.db
+*.sqlite3
+
+# 虚拟环境
+venv/
+.venv/
+env/
+.env/
+
+# 日志文件
+*.log
+logs/
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试文件与废弃文件
+test_*.py
+*_demo.png
+demo_*.png
