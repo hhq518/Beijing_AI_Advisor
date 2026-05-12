@@ -4,7 +4,7 @@ from pydantic import BaseModel  # 用来定义请求数据格式
 from typing import Optional, List
 import uvicorn
 import os
-from app_agent_LangChain import main_agent  # 导入你自己的Agent主逻辑
+from app_agent_LangChain import main_agent  # 导入你自己Agent主逻辑
 from database_manager import SessionStorage
 session_store = SessionStorage()
 
