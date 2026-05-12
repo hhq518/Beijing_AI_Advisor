@@ -48,33 +48,34 @@
 
 Beijing_AI_Advisor/
 ├── 📄 核心代码文件
-│   ├── app.py                   # 主入口：阿里云百炼大模型OpenAI兼容客户端初始化，多模式对话交互逻辑
-│   ├── app_rag.py               # RAG核心模块：知识库加载、向量存储（ChromaDB）、语义检索与上下文增强
-│   ├── app_fc.py                # RAG + Function Calling 整合主程序
-│   ├── app_web.py               # Streamlit Web端：可视化交互界面，支持多模式切换与对话历史展示
-│   ├── app_ui_multi_turn.py     # Streamlit 多轮对话界面（带上下文记忆）
-│   ├── function_calling_demo.py # Function Calling 功能演示
-│   ├── prompts.py               # Prompt模板管理：默认/JSON/思维链等多模式提示词，支持动态切换
-│   ├── rag_demo.py              # RAG功能演示脚本：本地知识库测试、向量检索效果验证
+│   ├── app.py                   # 主入口：通义千问客户端 + 多模式对话
+│   ├── app_rag.py               # RAG 核心模块：知识库 + 向量检索
+│   ├── app_fc.py                # RAG + Function Calling 整合
+│   ├── app_web.py               # Streamlit Web 界面
+│   ├── app_ui_multi_turn.py     # 多轮对话界面（带记忆）
+│   ├── function_calling_demo.py # Function Calling 演示
+│   ├── prompts.py               # 多模式 Prompt 模板
+│   ├── rag_demo.py              # RAG 检索效果测试
+│   ├── api_server.py            # FastAPI 后端服务（新增）
+│   ├── database_manager.py      # SQLite 对话存储（新增）
 │
 ├── 📚 项目资源文件
-│   ├── knowledge.txt            # 房产知识库文本：用于RAG检索的北京房产政策、市场信息
-│   ├── demo.png                 # 项目主截图/封面图
-│   ├── demo_rag.png             # RAG功能演示截图
-│   ├── demo_terminal.png        # 命令行交互演示截图
-│   ├── demo_web.png             # Web界面演示截图
+│   ├── knowledge.txt            # 北京房产知识库
+│   ├── demo.png                 # 项目演示截图
+│   ├── demo_rag.png             # RAG 效果截图
+│   ├── demo_terminal.png        # 启动日志截图
+│   ├── demo_web.png             # Web 界面截图
 │
 ├── ⚙️ 配置与依赖文件
-│   ├── .env                     # 环境变量配置（本地私有，不提交到Git）：存储API_KEY、BASE_URL等敏感信息
-│   ├── .gitignore               # Git忽略配置：排除.env、__pycache__、chroma_db缓存等
-│   ├── requirements.txt         # 项目依赖清单：openai、chromadb、streamlit、python-dotenv等
-│   ├── README.md                # 项目说明文档（当前需补充内容）
+│   ├── .env                     # API Key 配置（不上传 Git）
+│   ├── .gitignore               # 忽略缓存、密钥等文件
+│   ├── requirements.txt         # 项目依赖清单
+│   └── README.md                # 项目说明（本文件）
 │
-└── 📂 生成/缓存文件（可自动生成）
-    ├── chroma_db/               # ChromaDB向量数据库：存储知识库的向量嵌入，用于语义检索
-    └── __pycache__/             # Python自动生成的字节码缓存文件，可忽略
-
-
+└── 📂 自动生成文件
+    ├── chroma_db/               # Chroma 向量库
+    ├── chat_history.db           # SQLite 对话历史库
+    └── __pycache__/
 ```
 ---
 
