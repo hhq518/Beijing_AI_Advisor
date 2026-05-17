@@ -66,7 +66,7 @@ if __name__ == "__main__":
         "3": "cot",
         "4": "json"
     }
-    selected_mode = mode_map.get(mode_choice, "default")  # 输入无效时默认用default
+    selected_mode = mode_map.get(mode_choice, "default")  # 输入无效时默认用 default
     # --- 新增部分结束 ---
 
     result = get_ai_analysis(user_topic, prompt_mode=selected_mode)
