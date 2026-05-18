@@ -24,7 +24,7 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# ✅ 修复：多模态必须用原生 OpenAI 客户端，不能用 ChatOpenAI
+# ✅ 修复：多模态必须用原生 OpenAI 客户端，不能用ChatOpenAI
 client = OpenAI(
     api_key=api_key,
     base_url=base_url
