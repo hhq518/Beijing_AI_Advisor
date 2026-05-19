@@ -30,7 +30,7 @@ client = OpenAI(
     base_url=base_url
 )
 
-# ========== 3. 工具定义（全部用 @tool 装饰器，格式统一）==========
+# ========== 3. 工具定义（全部用 @tool 装饰器，格式统一 ）==========
 @tool
 def rag_search(query: str) -> str:
     """房产知识库检索，回答房产政策、房价、楼盘相关问题。
