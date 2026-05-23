@@ -19,7 +19,7 @@ app = FastAPI(
 # 3. 定义请求数据格式（别人调用时，必须按这个格式传数据）
 class ChatRequest(BaseModel):
     message: str  # 用户输入的消息
-    session_id: Optional[str] = None  # 可选参数：对话会话ID，用来区分不同的用户
+    session_id: Optional[str] = None  # 可选参数：对话会话ID，用来区分不同用户
 
 # 4. 定义响应数据格式（你的接口返回的数据格式）
 class ChatResponse(BaseModel):
