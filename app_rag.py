@@ -74,7 +74,7 @@ def rag_answer(question, db):
     docs = db.similarity_search(question, k=3)  # 算相似度，取最相关的3个文本块
     context = "\n\n".join([doc.page_content for doc in docs])  # 拼接检索到的内容
 
-    # 4.2 Prompt调优（核心！强制模型用知识库回答，不编造信息）
+    # 4.2 Prompt调优（核心！ 强制模型用知识库回答，不编造信息）
     prompt = f"""你是拥有10年北京房产分析经验的专业顾问，擅长结合政策、市场数据给用户精准的购房建议。
 
 ### 回答规则：
