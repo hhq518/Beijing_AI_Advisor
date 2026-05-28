@@ -105,7 +105,7 @@ tool_map = {
 }
 
 # ========== 5. 核心：实现多工具编排的ReAct循环 ==========
-# 原理：Agent会根据问题自动判断用哪个工具，全程不用你干预
+# 原理：Agent会根据问题自动判断用哪个工具，全程不用人为干预
 def run_orchestration_agent(query: str):
     print(f"\n=== 用户问题：{query} ===")
     messages = [{"role": "user", "content": query}]
