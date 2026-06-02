@@ -113,7 +113,7 @@ def handle_user_query(user_query: str) -> str:
         )
         return final_response.choices[0].message.content
 
-    # 情况B：AI判断不需要调用工具，走RAG知识库路径
+    # 情况B：AI判断不需要调用工具，选择走RAG知识库路径
     else:
         print("\n--- 2. 触发RAG知识库路径 ---")
         # 调用RAG检索
