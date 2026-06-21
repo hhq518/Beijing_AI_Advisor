@@ -1,16 +1,16 @@
 # 🏠 Beijing AI Advisor
 
-A beginner-friendly AI portfolio project for Beijing real-estate consultation. The repository contains both a working production-style application and several standalone educational demos that show how the project evolved.
+一个面向北京房地产咨询场景的 AI 应用作品集项目，适合初学者学习与展示。该仓库同时包含一条可运行的、接近生产形态的应用路径，以及多个独立的教学示例，用于展示项目从基础能力到完整应用的演进过程。
 
-## What this project demonstrates
+## 项目展示能力
 
-- DashScope / Qwen chat completion through the OpenAI-compatible API.
-- RAG over a local `knowledge.txt` file with ChromaDB.
-- Streamlit web UI examples for single-turn and multi-turn chat.
-- FastAPI service wrapper around the LangChain Agent.
-- Educational examples for Function Calling, tool orchestration, RAG, and input security.
+- 通过 OpenAI 兼容 API 调用 DashScope / Qwen 聊天补全能力。
+- 基于本地 `knowledge.txt` 文件与 ChromaDB 实现 RAG（检索增强生成）。
+- 提供 Streamlit Web UI 示例，覆盖单轮对话与多轮对话场景。
+- 使用 FastAPI 对 LangChain Agent 进行服务化封装。
+- 包含 Function Calling、工具编排、RAG 与输入安全等面向学习和面试讲解的示例。
 
-## Repository structure
+## 仓库结构
 
 ```text
 Beijing_AI_Advisor/
@@ -37,38 +37,38 @@ Beijing_AI_Advisor/
 └── security_guard.py          # Educational demo: prompt-injection/input guard
 ```
 
-Generated files such as `chroma_db/`, `chat_history.db`, `agent_sessions.db`, `agent_audit_log.json`, and `__pycache__/` are created at runtime and should not be edited manually.
+`chroma_db/`、`chat_history.db`、`agent_sessions.db`、`agent_audit_log.json` 和 `__pycache__/` 等生成文件会在运行时自动创建，不应手动编辑。
 
-## Production path
+## 生产路径
 
-The clearest production-style path is:
+最清晰的生产化应用路径如下：
 
-1. `app_ui_multi_turn.py` or `app_ui_web.py` provides a Streamlit UI.
-2. `api_server.py` exposes Agent functionality through FastAPI.
-3. `app_agent_LangChain.py` contains the LangChain Agent used by the API.
-4. `database_manager.py` stores chat history and supports vector storage helpers.
-5. `knowledge.txt` and `app_rag.py` provide the local RAG knowledge source and retrieval functions.
+1. `app_ui_multi_turn.py` 或 `app_ui_web.py` 提供 Streamlit 用户界面。
+2. `api_server.py` 通过 FastAPI 暴露 Agent 能力。
+3. `app_agent_LangChain.py` 包含 API 服务使用的 LangChain Agent。
+4. `database_manager.py` 负责存储聊天历史，并提供向量存储相关辅助类。
+5. `knowledge.txt` 与 `app_rag.py` 提供本地 RAG 知识来源和检索函数。
 
-The educational demo files are intentionally preserved for learning and interview discussion. They are useful for explaining the project evolution, but they are not the main production deployment path.
+教学示例文件被有意保留，便于学习和面试讲解。它们适合用来说明项目的演进过程，但不是主要的生产部署路径。
 
-## Environment variables
+## 环境变量
 
-Create a local `.env` file from the example template:
+基于示例模板创建本地 `.env` 文件：
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill in your DashScope credentials:
+随后填写你的 DashScope 凭证：
 
 ```env
 DASHSCOPE_API_KEY=your_dashscope_api_key_here
 DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 ```
 
-Do not commit `.env` files. Only `.env.example` should be stored in Git.
+不要提交 `.env` 文件。Git 仓库中只应保存 `.env.example`，用于安全地说明所需配置项。
 
-## Local setup
+## 本地安装
 
 ```bash
 python -m venv .venv
@@ -77,81 +77,81 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Update `.env` with your real `DASHSCOPE_API_KEY` before running any AI features.
+在运行任何 AI 功能之前，请先在 `.env` 中填入真实的 `DASHSCOPE_API_KEY`。
 
-## Run commands
+## 运行命令
 
-### Basic CLI chat
+### 基础 CLI 对话
 
 ```bash
 python app.py
 ```
 
-### RAG CLI demo
+### RAG CLI 示例
 
 ```bash
 python app_rag.py
 ```
 
-### Streamlit RAG web UI
+### Streamlit RAG Web UI
 
 ```bash
 python -m streamlit run app_ui_web.py --server.address 0.0.0.0 --server.port 7860
 ```
 
-### Streamlit multi-turn web UI
+### Streamlit 多轮对话 Web UI
 
 ```bash
 python -m streamlit run app_ui_multi_turn.py --server.address 0.0.0.0 --server.port 7860
 ```
 
-### FastAPI service
+### FastAPI 服务
 
 ```bash
 python -m uvicorn api_server:app --host 0.0.0.0 --port 8000
 ```
 
-Health check:
+健康检查：
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-## Docker usage
+## Docker 使用
 
-Build and run the Streamlit UI container:
+构建并运行 Streamlit UI 容器：
 
 ```bash
 docker build -t beijing-ai-advisor .
 docker run --env-file .env -p 7860:7860 beijing-ai-advisor
 ```
 
-Build and run the FastAPI container:
+构建并运行 FastAPI 容器：
 
 ```bash
 docker build -f Dockerfile.api -t beijing-ai-advisor-api .
 docker run --env-file .env -p 8000:8000 beijing-ai-advisor-api
 ```
 
-Run with Docker Compose:
+使用 Docker Compose 启动：
 
 ```bash
 docker compose up --build
 ```
 
-The compose file starts both services:
+Compose 文件会启动两个服务：
 
-- Streamlit UI: <http://localhost:7860>
-- FastAPI API: <http://localhost:8000>
+- Streamlit 界面：<http://localhost:7860>
+- FastAPI 接口：<http://localhost:8000>
 
-## Screenshots
+## 截图
 
-![Project demo](images/demo.png)
+![项目演示](images/demo.png)
 
-## Interview talking points
+## 面试讲解要点
 
-- Explain the difference between the production path and educational demos.
-- Show how RAG grounds answers in `knowledge.txt`.
-- Discuss why `.env` protects secrets and why `.env.example` documents configuration safely.
-- Walk through the layered architecture in `docs/architecture.md`.
-- Demonstrate local and Docker startup commands.
+- 说明生产路径与教学示例之间的区别。
+- 展示 RAG 如何基于 `knowledge.txt` 为回答提供本地知识依据。
+- 解释为什么使用 `.env` 保护密钥，以及为什么用 `.env.example` 安全地记录配置项。
+- 讲解 `docs/architecture.md` 中的分层架构设计。
+- 演示本地启动命令与 Docker 启动命令。
