@@ -1,5 +1,6 @@
 # 1. 导入依赖
 import os
+from pathlib import Path
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader
@@ -11,12 +12,14 @@ from openai import OpenAI #这些全是LangChain专门做RAG发工具
 # 2. 初始化配置（从.env文件读取，避免硬编码）
 # --------------------------
 load_dotenv()  # 加载.env文件里的环境变量
-API_KEY = os.getenv("ALIYUN_API_KEY")  # 读取阿里云API密钥
+API_KEY = os.getenv("DASHSCOPE_API_KEY")  # 读取阿里云API密钥
+BASE_URL = os.getenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+REPO_ROOT = Path(__file__).resolve().parent
 
 # 初始化通义千问客户端（复用你app.py里的配置）
 client = OpenAI(
     api_key=API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url=BASE_URL
 ) # 创建一个能跟AI对话的客户端，就像你打开了一个聊天窗口，以后对话都通过它发
 
 # --------------------------
@@ -26,9 +29,10 @@ def init_knowledge_base():
     """初始化知识库：加载、分块、向量化、存入数据库"""
     print("🔄 正在初始化知识库...")
 
-    # 3.1 加载knowledge.txt文件（用绝对路径，确保不会找不到文件）
+    # 3.1 加载knowledge.txt文件（使用仓库相对路径，方便 Linux/Docker/Windows 运行）
+    knowledge_path = REPO_ROOT / "knowledge.txt"
     loader = TextLoader(
-        r"C:\Users\95381\Desktop\Beijing_AI_Advisor\knowledge.txt",
+        str(knowledge_path),
         encoding="utf-8"
     )
     documents = loader.load()
@@ -54,7 +58,7 @@ def init_knowledge_base():
     db = Chroma.from_documents(
         documents=texts,
         embedding=embeddings,
-        persist_directory="./chroma_db"  # 数据库文件会存在这个文件夹里
+        persist_directory=str(REPO_ROOT / "chroma_db")  # 数据库文件会存在这个文件夹里
     )
     print("✅ 知识库初始化完成！")
     return db

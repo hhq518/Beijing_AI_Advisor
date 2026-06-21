@@ -6,12 +6,13 @@ from openai import OpenAI # 引入官方的 AI 客户端，让你能调用通义
 
 # 加载.env文件中的API Key 加载密钥
 load_dotenv() #把键值对塞进系统环境变量里
-API_KEY = os.getenv("ALIYUN_API_KEY") # os去系统变量里面拿API Key和访问地址
+API_KEY = os.getenv("DASHSCOPE_API_KEY") # os去系统变量里面拿API Key和访问地址
+BASE_URL = os.getenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
 # 初始化阿里云百炼的OpenAI兼容客户端 创建客户端
 client = OpenAI(
     api_key=API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url=BASE_URL
 ) # 创建一个能跟AI对话的客户端，就像你打开了一个聊天窗口，以后对话都通过它发
 
 def select_prompt(mode="default"):
