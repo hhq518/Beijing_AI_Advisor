@@ -1,10 +1,10 @@
-# 🏠 Beijing AI Advisor
+# 🏠 北京房产AI智能分析助手
 
-一个面向北京房地产咨询场景的 AI 应用作品集项目，适合初学者学习与展示。该仓库同时包含一条可运行的、接近生产形态的应用路径，以及多个独立的教学示例，用于展示项目从基础能力到完整应用的演进过程。
+一个面向北京房地产咨询场景的 AI 应用作品集项目。该仓库同时包含一条可运行的、接近生产形态的应用路径，以及多个独立的教学示例，用于展示项目从基础能力到完整应用的演进过程。
 
 ## 项目展示能力
 
-- 通过 OpenAI 兼容 API 调用 DashScope / Qwen 聊天补全能力。
+- 通过 通义千问 兼容 OpenAI  API 调用 Chat Completions 聊天补全能力。
 - 基于本地 `knowledge.txt` 文件与 ChromaDB 实现 RAG（检索增强生成）。
 - 提供 Streamlit Web UI 示例，覆盖单轮对话与多轮对话场景。
 - 使用 FastAPI 对 LangChain Agent 进行服务化封装。
@@ -44,7 +44,7 @@ Beijing_AI_Advisor/
 最清晰的生产化应用路径如下：
 
 1. `app_ui_multi_turn.py` 或 `app_ui_web.py` 提供 Streamlit 用户界面。
-2. `api_server.py` 通过 FastAPI 暴露 Agent 能力。
+2. `api_server.py` 通过 FastAPI 展示 Agent 能力。
 3. `app_agent_LangChain.py` 包含 API 服务使用的 LangChain Agent。
 4. `database_manager.py` 负责存储聊天历史，并提供向量存储相关辅助类。
 5. `knowledge.txt` 与 `app_rag.py` 提供本地 RAG 知识来源和检索函数。
@@ -144,9 +144,21 @@ Compose 文件会启动两个服务：
 - Streamlit 界面：<http://localhost:7860>
 - FastAPI 接口：<http://localhost:8000>
 
-## 截图
-
-![项目演示](images/demo.png)
+## 📸 Streamlit网页交互界面
+AI 助手可视化对话界面
+![项目运行效果](images/demo_web.png)
+## 📸 RAG问答版本
+知识库加载 向量检索与问答结果展示
+![项目运行效果](images/demo_rag.png)
+## 📸 Agent终端工具调用
+LangChain Agent 工具调用演示
+![项目运行效果](images/agent_demo.png)
+## 📸 多轮对话
+三层会话存储架构实现连贯 Memory SQLite Redis
+![项目运行效果](images//memory_full_link.png)
+## 📸 FastAPI Swagger网页交互界面
+打开：`http://localhost:8000/docs`
+![项目运行效果](images/api_server_demo.png)
 
 ## 面试讲解要点
 
