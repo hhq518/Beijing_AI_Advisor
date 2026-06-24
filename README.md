@@ -1,136 +1,157 @@
-# 🏠 北京房产AI智能分析助手
-> 基于阿里云通义千问大模型 + RAG知识库的房产咨询工具，个人Python实战项目
- --- 
- 
- ## ✨ 项目亮点 
-- 基于阿里云百炼通义千问API，稳定的大模型对话能力
-- 本地知识库增强（RAG），支持北京房价、板块、政策等专业分析
-- 多模式Prompt切换（默认/JSON/思维链），适配不同交互场景
-- 轻量化设计，一键运行，无需复杂环境配置 
-- 模块化架构，API调用与提示词模板分离，易扩展维护
-- 内置`.env`密钥管理，保障API Key安全
-- 支持Function Calling，AI可调用外部工具，实现天气查询等扩展能力
-- 支持多轮对话，具备上下文记忆能力，对话体验更自然
- --- 
-## 🚀 核心功能
- 1. **多维度房产咨询** 
- - 北京房价走势、热门板块对比、政策解读等专业问答 
- - 支持JSON结构化输出，便于后续数据处理与分析 
- 2. **RAG本地知识库增强** 
- - 基于ChromaDB向量数据库，实现语义检索
- - 结合本地房产知识库，提供更精准、专业的回答 
- 3. **多模式交互支持**
- - 命令行模式：直接对话，快速获取分析结果 
- - Web可视化界面：Streamlit搭建，支持对话历史与多模式切换
- 4. **Function Calling 工具调用**
- - 支持AI调用外部工具，如天气查询等实用功能
- - 可扩展更多工具，实现房贷计算、政策查询等场景
- 5. **多轮对话上下文记忆**
- - 完整保留对话历史，支持指代、上下文关联提问
- - 实现连贯对话体验，如“你刚才提到的小区哪个最贵？”  
- 6. **安全与可维护性**
- - `.env`文件管理敏感信息，避免密钥泄露
- - 模块化代码结构，API、Prompt、RAG模块分离，便于扩展
- --- 
- ## 🛠️ 技术栈
- | 模块 | 技术/工具 | 用途 |
- | - | - | - |
- | 开发语言 | Python 3.x | 项目核心开发语言 | 
- | 大模型服务 | 阿里云百炼通义千问API | 核心对话与分析能力 |
- | 向量数据库 | ChromaDB | 本地知识库存储与语义检索 |
- | Web界面 | Streamlit | 可视化交互界面搭建 | 
- | 依赖管理 | requirements.txt | 项目依赖统一管理 |
- | 环境配置 | python-dotenv | `.env`文件加载与密钥管理 | 
- | 工具调用 | OpenAI Function Calling | 支持AI调用外部工具 |
-  --- 
-  ## 📁 项目结构
-```
+# 🏠 Beijing AI Advisor
 
+一个面向北京房地产咨询场景的 AI 应用作品集项目，适合初学者学习与展示。该仓库同时包含一条可运行的、接近生产形态的应用路径，以及多个独立的教学示例，用于展示项目从基础能力到完整应用的演进过程。
+
+## 项目展示能力
+
+- 通过 OpenAI 兼容 API 调用 DashScope / Qwen 聊天补全能力。
+- 基于本地 `knowledge.txt` 文件与 ChromaDB 实现 RAG（检索增强生成）。
+- 提供 Streamlit Web UI 示例，覆盖单轮对话与多轮对话场景。
+- 使用 FastAPI 对 LangChain Agent 进行服务化封装。
+- 包含 Function Calling、工具编排、RAG 与输入安全等面向学习和面试讲解的示例。
+
+## 仓库结构
+
+```text
 Beijing_AI_Advisor/
-├── 📄 核心代码文件
-│   ├── app.py                   # 主入口：通义千问客户端 + 多模式对话
-│   ├── app_rag.py               # RAG 核心模块：知识库 + 向量检索
-│   ├── app_fc.py                # RAG + Function Calling 整合
-│   ├── app_web.py               # Streamlit Web 界面
-│   ├── app_ui_multi_turn.py     # 多轮对话界面（带记忆）
-│   ├── function_calling_demo.py # Function Calling 演示
-│   ├── prompts.py               # 多模式 Prompt 模板
-│   ├── rag_demo.py              # RAG 检索效果测试
-│   ├── api_server.py            # FastAPI 后端服务（新增）
-│   ├── database_manager.py      # SQLite 对话存储（新增）
+├── api_server.py              # FastAPI production API entry point
+├── app.py                     # Basic production CLI chat entry point
+├── app_agent.py               # Agent implementation example with tools and memory
+├── app_agent_LangChain.py     # LangChain Agent used by the API server
+├── app_ui_web.py              # Streamlit RAG web UI
+├── app_ui_multi_turn.py       # Streamlit multi-turn chat UI
+├── database_manager.py        # SQLite session storage and ChromaDB helper classes
+├── prompts.py                 # Prompt templates
+├── knowledge.txt              # Local Beijing real-estate knowledge base
+├── docs/architecture.md       # Architecture notes and diagram
+├── images/                    # Project screenshots and presentation assets
+├── Dockerfile                 # Streamlit container
+├── Dockerfile.api             # FastAPI container
+├── docker-compose.yml         # Local container orchestration
+├── requirements.txt           # Python dependencies
+├── .env.example               # Safe environment variable template
 │
-├── 📚 项目资源文件
-│   ├── knowledge.txt            # 北京房产知识库
-│   ├── demo.png                 # 项目演示截图
-│   ├── demo_rag.png             # RAG 效果截图
-│   ├── demo_terminal.png        # 启动日志截图
-│   ├── demo_web.png             # Web 界面截图
-│
-├── ⚙️ 配置与依赖文件
-│   ├── .env                     # API Key 配置（不上传 Git）
-│   ├── .gitignore               # 忽略缓存、密钥等文件
-│   ├── requirements.txt         # 项目依赖清单
-│   └── README.md                # 项目说明（本文件）
-│
-└── 📂 自动生成文件
-    ├── chroma_db/               # Chroma 向量库
-    ├── chat_history.db           # SQLite 对话历史库
-    └── __pycache__/
+├── app_fc.py                  # Educational demo: RAG + Function Calling
+├── app_rag.py                 # Educational demo and reusable RAG functions
+├── tool_orchestration_demo.py # Educational demo: tool routing/orchestration
+└── security_guard.py          # Educational demo: prompt-injection/input guard
 ```
----
 
-## 🚩 快速开始
-### 1 . 环境准备
+`chroma_db/`、`chat_history.db`、`agent_sessions.db`、`agent_audit_log.json` 和 `__pycache__/` 等生成文件会在运行时自动创建，不应手动编辑。
 
-#### 克隆仓库 
-``git clone https://github.com/你的用户名/Beijing_AI_Advisor.git``
+## 生产路径
 
-``cd Beijing_AI_Advisor ``
+最清晰的生产化应用路径如下：
 
-#### 安装依赖 
+1. `app_ui_multi_turn.py` 或 `app_ui_web.py` 提供 Streamlit 用户界面。
+2. `api_server.py` 通过 FastAPI 暴露 Agent 能力。
+3. `app_agent_LangChain.py` 包含 API 服务使用的 LangChain Agent。
+4. `database_manager.py` 负责存储聊天历史，并提供向量存储相关辅助类。
+5. `knowledge.txt` 与 `app_rag.py` 提供本地 RAG 知识来源和检索函数。
 
-```pip install -r requirements.txt```
+教学示例文件被有意保留，便于学习和面试讲解。它们适合用来说明项目的演进过程，但不是主要的生产部署路径。
 
-### 2 . 配置API Key
-在项目根目录创建 `.env` 文件，写入你的阿里云 API 密钥：
+## 环境变量
 
-``API_KEY=你的阿里云百炼API密钥 ``
+基于示例模板创建本地 `.env` 文件：
 
-``BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1``
+```bash
+cp .env.example .env
+```
 
-### 3. 运行项目
-#### 版本1：基础对话版
-```python app.py```
-#### 版本2:RAG知识库问答(终端版)	
-##### 本项目支持基于本地文档的RAG增强问答，让AI结合你提供的北京房产知识精准回答。
-1. 在knowledge.txt中添加你想让Al参考的知识点(如房价数据，政策解读，真实房源信息等)
-2. 运行 RAG主程序：
-Windows PowerShell先设置国内镜像(避免模型下载失败)
+随后填写你的 DashScope 凭证：
 
-```Senv:HF_ENDPOINT	"https://hf-mirror.com"	```
-##### 运行终端版RAG助手
+```env
+DASHSCOPE_API_KEY=your_dashscope_api_key_here
+DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+```
 
-```python app_rag.py```
+不要提交 `.env` 文件。Git 仓库中只应保存 `.env.example`，用于安全地说明所需配置项。
 
-#### 版本3:Streamlit 网页版(推荐)
-一键启动带界面的AI助手，体验更接近 ChatGPT:
+## 本地安装
 
-``python -m streamlit run app_web.py``
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cp .env.example .env
+```
 
----
+在运行任何 AI 功能之前，请先在 `.env` 中填入真实的 `DASHSCOPE_API_KEY`。
 
-## 📸 基础问答版本
-![项目运行效果](images/demo.png)
-## 📸 RAG问答版本
-知识库加载。向量检索与问答结果展示
-![项目运行效果](images/demo_rag.png)
-## 📸 Streamlit服务启动日志
-服务启动过程与端口信息展示
-![项目运行效果](images/demo_terminal.png)
-## 📸 Streamlit网页交互界面
-AI 助手可视化对话界面
-![项目运行效果](images/demo_web.png)
+## 运行命令
 
----
-### 📧 关于作者
-**邮箱**:[hhq518@163.com](mailto:hhq518@qq.com)
+### 基础 CLI 对话
+
+```bash
+python app.py
+```
+
+### RAG CLI 示例
+
+```bash
+python app_rag.py
+```
+
+### Streamlit RAG Web UI
+
+```bash
+python -m streamlit run app_ui_web.py --server.address 0.0.0.0 --server.port 7860
+```
+
+### Streamlit 多轮对话 Web UI
+
+```bash
+python -m streamlit run app_ui_multi_turn.py --server.address 0.0.0.0 --server.port 7860
+```
+
+### FastAPI 服务
+
+```bash
+python -m uvicorn api_server:app --host 0.0.0.0 --port 8000
+```
+
+健康检查：
+
+```bash
+curl http://localhost:8000/health
+```
+
+## Docker 使用
+
+构建并运行 Streamlit UI 容器：
+
+```bash
+docker build -t beijing-ai-advisor .
+docker run --env-file .env -p 7860:7860 beijing-ai-advisor
+```
+
+构建并运行 FastAPI 容器：
+
+```bash
+docker build -f Dockerfile.api -t beijing-ai-advisor-api .
+docker run --env-file .env -p 8000:8000 beijing-ai-advisor-api
+```
+
+使用 Docker Compose 启动：
+
+```bash
+docker compose up --build
+```
+
+Compose 文件会启动两个服务：
+
+- Streamlit 界面：<http://localhost:7860>
+- FastAPI 接口：<http://localhost:8000>
+
+## 截图
+
+![项目演示](images/demo.png)
+
+## 面试讲解要点
+
+- 说明生产路径与教学示例之间的区别。
+- 展示 RAG 如何基于 `knowledge.txt` 为回答提供本地知识依据。
+- 解释为什么使用 `.env` 保护密钥，以及为什么用 `.env.example` 安全地记录配置项。
+- 讲解 `docs/architecture.md` 中的分层架构设计。
+- 演示本地启动命令与 Docker 启动命令。
